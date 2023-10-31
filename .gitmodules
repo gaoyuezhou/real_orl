@@ -1,0 +1,3 @@
+[submodule "agents/mjrl"]
+	path = agents/mjrl
+	url = https://github.com/gaoyuezhou/mjrl.git
