@@ -1,0 +1,11 @@
+agent: 'BC'
+#dataset: '/home/prl/data/morel_reaching-vel-delta.pkl'
+dataset: '/home/prl/data/morel_pushing-lid-delta-025smoothed.pkl'
+learner:
+  use_gpu: True
+  learning_rate: 0.0005
+  batch_size: 1024
+  scaler: 'standard'
+  action_scaler: 'min_max'
+training:
+  n_steps: 1000000

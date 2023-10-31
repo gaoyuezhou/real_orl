@@ -1,0 +1,17 @@
+agent: 'AWAC'
+dataset: '/home/prl/data/morel_pushing-lid-delta-025smoothed.pkl'
+#dataset: '/home/prl/data/morel_reaching-vel-delta.pkl'
+learner:
+  use_gpu: True
+  batch_size: 1024
+  actor_learning_rate: 0.0001
+  critic_learning_rate: 0.0003
+  tau: 0.005
+  lam: 1.0
+  n_action_samples: 1 #?
+  update_actor_interval: 1
+  scaler: 'standard'
+  action_scaler: 'min_max'
+
+training:
+  n_steps: 100000000
