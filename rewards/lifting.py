@@ -1,10 +1,9 @@
 import numpy as np
 from franka_wrapper import FrankaWrapper
 
-# frame between robot and tag
+# Frame between robot and tag
 offset = np.array([1.09826201, -0.05144846999, 0.2276264])
 
-# LIMIT is very harsh (for determining death of agent); So let's make it loose
 JOINT_LIMIT_MIN = np.array(
         [-2.8773, -1.7428, -2.8773, -3.0018, -2.8773, 0.0025-np.pi/2, -2.8773, 0.0])
 JOINT_LIMIT_MAX = np.array(
@@ -39,26 +38,16 @@ def reward_function(paths):
         tag_pos = z_plane_adjust_batch(tag_pos)
         jointstates = paths["observations"][i, :, :8]
         ee_xyz = np.zeros((horizon, 3))
-        # import pdb;pdb.set_trace()
         for j, js in enumerate(jointstates):
             if (js <= JOINT_LIMIT_MAX).all() and (js >= JOINT_LIMIT_MIN).all():
-                #print(js)
                 ee_xyz[j] = franka.get_fk(js)
                 ee_xyz[j][2] -= 0.17 # for computing gripper dist with z_plane_adjusted tag_pos
             else:
                 ee_xyz[j] = -1
-        # import pdb;pdb.set_trace()
         gripper_dist = np.linalg.norm(tag_pos  - ee_xyz, axis=1)
         height_bonus = np.minimum(0.5, np.maximum(tag_pos[:, 2], 0) * 10)
         height_bonus = (gripper_dist < 0.1) * height_bonus
         rewards[i] = np.minimum(1, (0.5 - gripper_dist + 0.07) + height_bonus)
-        # import pdb;pdb.set_trace()
-        # ee_xyzs[i] = ee_xyz
-        # gripper_dists[i] = gripper_dist
-    # print("first: ", paths["observations"][0, 0])
-    # print("last: ", paths["observations"][0, -1])
-    # paths['ee_xyz']  = ee_xyzs
-    # paths['gripper_dist']  = gripper_dists
     paths["rewards"] = rewards
     return paths
 
@@ -66,7 +55,6 @@ def termination_function(paths):
     # paths is a list of path objects for this function
     for path in paths:
         obs = path["observations"]
-        #print(obs[0:2], path["actions"][0])
         T = obs.shape[0]
         t = 0
         done = False
@@ -76,8 +64,6 @@ def termination_function(paths):
             done = not valid
             t = t + 1
             T = t if done else T
-        #np.set_printoptions(precision=4)
-        #print(path["observations"][:10, :8], T)
         path["observations"] = path["observations"][:T]
         path["actions"] = path["actions"][:T]
         path["rewards"] = path["rewards"][:T]

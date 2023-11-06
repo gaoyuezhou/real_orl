@@ -56,7 +56,7 @@ def get_args():
     parser.add_argument("-f", "--logs_folder",
                         type=str,
                         help="The folder that contains all logs to parse",
-                        default="/home/franka/dev/franka_demo/logs/")
+                        default="./datasets/task4_pnp")
     parser.add_argument("-o", "--output_pickle_name",
                         type=str,
                         default="parsed_data.pkl")
@@ -68,6 +68,9 @@ def get_args():
                         action="store_true")
     parser.add_argument("-t", "--ignore_tracking",
                         help="When present, expect to NOT get marker positions from images",
+                        action="store_true")
+    parser.add_argument("-i", "--is_inference",
+                        help="When present, expect to have another tag in the env",
                         action="store_true")
     #parser.add_argument('-m','--marker', nargs='*', help='marker ids', type=int)
     return parser.parse_args()
@@ -81,7 +84,6 @@ def remove_datapoints_by_idx(info, ids):
     for key in info.keys():
         if type(info[key]) is list:
             for idx in sorted(ids, reverse=True):
-                print("cur pop idx: ", idx)
                 info[key].pop(idx)
         elif type(info[key]) is np.ndarray:
             info[key] = np.delete(info[key], ids, axis=0)
@@ -112,7 +114,7 @@ if __name__ == "__main__":
         print("demo name: ", demo)
         try:
             csv_log = os.path.join(demo, 'log.csv')
-            csv_data = pd.read_csv(csv_log, names=['timestamp','robostate','robocmd', 'exec_cmd', 'goal', 'cam'])
+            csv_data = pd.read_csv(csv_log, names=['timestamp','robostate', 'exec_cmd', 'goal', 'cam'])
         except Exception as e:
             print(f"Exception: cannot read log.csv at {demo}")
             continue
@@ -150,7 +152,7 @@ if __name__ == "__main__":
             # Remove datapoints missing any image
             csv_data.dropna(inplace=True)
 
-        valid_data = csv_data[csv_data['robocmd'] != 'None']
+        valid_data = csv_data[csv_data['exec_cmd'] != 'None']
         print(f"Found {initial_len} datapoints. " +
             (f"{len(csv_data)} has all images. " if not args.ignore_camera else "") +
             f"{len(valid_data)} usable. ")
@@ -209,8 +211,7 @@ if __name__ == "__main__":
         mid_marker_positions = np.vstack(mid_marker_positions)
 
         ############################ FOR MJRL ########################## 
-        #### not post processing goals, use the original scripted goals
-        print(mid_marker_positions[0], info['goals'][0])
+        # not post processing goals, use the original scripted goals
         info['observations'] = np.concatenate([info['jointstates'], mid_marker_positions, info['goals']], axis=1)
         info['actions'] = info['commands']
         termination = np.zeros(len(info['commands']))
@@ -219,20 +220,21 @@ if __name__ == "__main__":
         print("no marker idx: ", no_marker_idx)
         remove_datapoints_by_idx(info, no_marker_idx)
 
-        from rewards.lifting import reward_function # CHOOSE THE TASK
+        from rewards.pnp import reward_function # CHOOSE THE TASK
         tmp_info = {}
         tmp_info["observations"] = np.expand_dims(info["observations"], axis=0)
         tmp_info["actions"] = np.expand_dims(info["actions"], axis=0)
         reward_function(tmp_info)
         info['rewards'] = tmp_info['rewards'][0]
-        success = np.linalg.norm(board_marker_positions[-1]) == 0
         success = False
+        if args.is_inference:
+            success = np.linalg.norm(board_marker_positions[-1]) == 0
         if success:
             best_rewards.append(1)
         else:
             best_rewards.append(max(info['rewards']))
-        import matplotlib.pyplot as plt
         ######################################################
+        
         list_of_demos.append(info)
         count_dp += len(valid_data)
     print(best_rewards, np.mean(best_rewards), np.std(best_rewards))

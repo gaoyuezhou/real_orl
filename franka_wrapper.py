@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from gym import utils
 from gym.envs.mujoco import mujoco_env
@@ -5,7 +6,7 @@ from gym.envs.mujoco import mujoco_env
 class FrankaWrapper(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         utils.EzPickle.__init__(self)
-        mujoco_env.MujocoEnv.__init__(self, "./franka_panda.xml", frame_skip=5)
+        mujoco_env.MujocoEnv.__init__(self, os.path.join(os.getcwd(), "franka_panda.xml"), frame_skip=5)
 
     def step(self, a):
         self.do_simulation(a, self.frame_skip)

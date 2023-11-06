@@ -1,7 +1,7 @@
 import numpy as np
 from franka_wrapper import FrankaWrapper
 
-# frame between robot and tag
+# Frame between robot and tag
 offset = np.array([0.6, 0.07, 0.46])
 
 JOINT_LIMIT_MIN = np.array(
@@ -27,7 +27,7 @@ def reward_function(paths):
         tags_xyz = paths["observations"][i, :,-3:]
         tags_xyz = tags_xyz[np.linalg.norm(tags_xyz, axis=1) != 0]
         tag_xyz = np.average((tags_xyz), axis=0)
-        transformed_tag_xyz = tag_xyz                   ### for current auto-collected reaching data, no need to do coordinate transform
+        transformed_tag_xyz = tag_xyz  # For current auto-collected reaching data, no need to do coordinate transform
 
         jointstates = paths["observations"][i, :, :8]
         ee_xyz = np.zeros((horizon, 3))

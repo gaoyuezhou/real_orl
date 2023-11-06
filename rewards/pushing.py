@@ -1,7 +1,7 @@
 import numpy as np
 from franka_wrapper import FrankaWrapper
 
-# frame between robot and tag
+# Frame between robot and tag
 offset = np.array([1.09826201, -0.05144846999, 0.2276264])
 
 JOINT_LIMIT_MIN = np.array(

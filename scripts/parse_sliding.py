@@ -57,7 +57,7 @@ def get_args():
     parser.add_argument("-f", "--logs_folder",
                         type=str,
                         help="The folder that contains all logs to parse",
-                        default="/home/franka/dev/franka_demo/logs/")
+                        default="./datasets/task2_sliding")
     parser.add_argument("-o", "--output_pickle_name",
                         type=str,
                         default="parsed_data.pkl")
@@ -82,7 +82,6 @@ def remove_datapoints_by_idx(info, ids):
     for key in info.keys():
         if type(info[key]) is list:
             for idx in sorted(ids, reverse=True):
-                print("cur pop idx: ", idx)
                 info[key].pop(idx)
         elif type(info[key]) is np.ndarray:
             info[key] = np.delete(info[key], ids, axis=0)
@@ -151,7 +150,7 @@ if __name__ == "__main__":
             # Remove datapoints missing any image
             csv_data.dropna(inplace=True)
 
-        valid_data = csv_data[csv_data['robocmd'] != 'None']
+        valid_data = csv_data[csv_data['exec_command'] != 'None']
         print(f"Found {initial_len} datapoints. " +
             (f"{len(csv_data)} has all images. " if not args.ignore_camera else "") +
             f"{len(valid_data)} usable. ")
@@ -207,8 +206,7 @@ if __name__ == "__main__":
         mid_marker_positions = np.vstack(mid_marker_positions)
 
         ############################ FOR MJRL ########################## 
-        #### not post processing goals, use the original scripted goals
-        print(np.linalg.norm(mid_marker_positions[-1] - info['goals'][0]))
+        # not post processing goals, use the original scripted goals
         info['observations'] = np.concatenate([info['jointstates'], mid_marker_positions, info['goals']], axis=1)
         info['actions'] = info['commands']
         termination = np.zeros(len(info['commands']))
@@ -224,9 +222,8 @@ if __name__ == "__main__":
         reward_function(tmp_info)
         info['rewards'] = tmp_info['rewards'][0]
         best_rewards.append(max(info['rewards']))
-        print("max_reward: ", max(info['rewards']), "   last reward: ", info['rewards'][-1])
-        import matplotlib.pyplot as plt
         ######################################################
+
         list_of_demos.append(info)
         count_dp += len(valid_data)
     print(best_rewards, np.mean(best_rewards), np.std(best_rewards))

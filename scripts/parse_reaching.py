@@ -12,7 +12,7 @@ def get_args():
     parser.add_argument("-f", "--logs_folder",
                         type=str,
                         help="The folder that contains all logs to parse",
-                        default="/home/franka/dev/franka_demo/logs/")
+                        default="./datasets/task1_reaching_toy")
     parser.add_argument("-o", "--output_pickle_name",
                         type=str,
                         default="parsed_data.pkl")
@@ -63,7 +63,7 @@ if __name__ == "__main__":
             continue
 
         initial_len = len(csv_data)
-        valid_data = csv_data[csv_data['robocmd'] != 'None']
+        valid_data = csv_data[csv_data['exec_cmd'] != 'None']
         print(f"Found {initial_len} datapoints. " +
             (f"{len(csv_data)} has all images. " if not args.ignore_camera else "") +
             f"{len(valid_data)} usable. ")
@@ -80,7 +80,7 @@ if __name__ == "__main__":
         }
 
         ######################### FOR MJRL #############################
-        # Step 1. goal relabel
+        # Goal relabel
         goal = np.copy(info["goals"])
         segment_ids = np.nonzero([np.linalg.norm(goal[i] - goal[i - 1]) for i in range(1, len(goal))])[0]
         cur_infos = []
@@ -111,12 +111,11 @@ if __name__ == "__main__":
             tmp_info["actions"] = np.expand_dims(info["actions"], axis=0)
             reward_function(tmp_info)
             info['rewards'] = tmp_info['rewards'][0]
-            print(max(info['rewards']))
             rewards.append(max(info['rewards']))
             ######################################################
 
             list_of_demos.append(info)
             count_dp += len(valid_data)
-    print("rewards: ", rewards, np.mean(rewards),  np.std(rewards))
+    print(rewards, np.mean(rewards),  np.std(rewards))
     with open(args.output_pickle_name, 'wb') as f:
         pickle.dump(list_of_demos, f)
