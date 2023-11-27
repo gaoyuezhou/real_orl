@@ -1,9 +1,11 @@
+'''
+Script for calculating marker positions from a pair of calibrated camera images.
+'''
 import arucoX as ax
-# from realsense import RealSense
 import matplotlib.pyplot as plt
 import numpy as np
-# Initialize camera modules
 
+# Initialize camera modules
 from camera_params import INTRINSICS_DICT, EXTRINSICS_DICT, CAMERA_IDS_DICT
 
 current_cameras = ['815412070907', '818312070212']
