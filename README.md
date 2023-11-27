@@ -51,10 +51,6 @@ For all evaluations, we compare four algorithms:
 
 We refer to [mjrl](https://github.com/aravindr93/mjrl)'s implementation for MOREL and [d3rlpy](https://github.com/takuseno/d3rlpy)'s implementation for AWAC and IQL, and release our code under `agents/`.
 
-## Dataset
-We release our raw and parsed dataset here: 
-https://drive.google.com/drive/folders/1BGsG38vfXHjT2_yASP2D9HU2lLCwXA6T?usp=sharing
-
 ## Citation
 
 ```
