@@ -10,7 +10,7 @@ Offline reinforcement learning (ORL) holds great promise for robot learning due 
 
 ## Dataset
 
-We release the Real-ORL dataset that we used for all of our experiments. The parsed and raw datasets can be downloaded [here](https://drive.google.com/file/d/1txHP1xxNpQUK8AunTAzxk3V6-gmNpQcj/view?usp=sharing).
+We release the Real-ORL dataset that we used for all of our experiments. The parsed and raw datasets can be downloaded [here](https://drive.google.com/drive/folders/1BGsG38vfXHjT2_yASP2D9HU2lLCwXA6T?usp=sharing).
 
 ### Tasks
 
