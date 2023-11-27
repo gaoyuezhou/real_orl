@@ -3,7 +3,7 @@
 [[Arxiv]](https://arxiv.org/abs/2210.06479) [[Code]](https://github.com/gaoyuezhou/real_orl) [[Data]](https://drive.google.com/drive/folders/1BGsG38vfXHjT2_yASP2D9HU2lLCwXA6T?usp=sharing) [[Project Page]](https://sites.google.com/view/real-orl)
 
 
-![](media/real-orl-v2.0.png)
+![teaser_figure](media/real-orl-v2.0.png)
 
 ## Abstract
 Offline reinforcement learning (ORL) holds great promise for robot learning due to its ability to learn from arbitrary pre-generated experience. However, current ORL benchmarks are almost entirely in simulation and utilize contrived datasets like replay buffers of online RL agents or sub-optimal trajectories, and thus hold limited relevance for real-world robotics. In this work (Real-ORL), we posit that data collected from safe operations of closely related tasks are more practical data sources for real-world robot learning. Under these settings, we perform an extensive (6500+ trajectories collected over 800+ robot hours and 270+ human labor hour) empirical study evaluating generalization and transfer capabilities of representative ORL methods on four real-world tabletop manipulation tasks. Our study finds that ORL and imitation learning prefer different action spaces, and that ORL algorithms can generalize from leveraging offline heterogeneous data sources and outperform imitation learning. 
